@@ -39,13 +39,11 @@ ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=${CUDA_HOME}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
-# TODO: Check whether we need NVIDIA settings copied in all stages or just this common one
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 LABEL com.nvidia.volumes.needed="nvidia_driver"
 
 # Install Python-level deps
-FROM os as conda
 ARG PYTHON_VERSION=3.9
 RUN source /tmp/install_python_deps.sh ${PYTHON_VERSION} ${CUDA_VERSION}
 SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
@@ -54,8 +52,6 @@ ENV PATH=/opt/conda/bin:${PATH}
 ENV LD_LIBRARY_PATH=/opt/conda/lib:${LD_LIBRARY_PATH}
 
 # ONNX
-FROM conda as onnx
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
 ARG ONNX_VERSION
 ENV ONNX_VERSION ${ONNX_VERSION:-main}
 ENV CMAKE_ARGS "-DONNX_USE_PROTOBUF_SHARED_LIBS=ON"
@@ -64,26 +60,19 @@ RUN git clone https://github.com/onnx/onnx.git onnx
 WORKDIR /opt/onnx
 RUN git checkout ${ONNX_VERSION}
 RUN git submodule update --init --recursive --jobs 0
-RUN python setup.py bdist_wheel
+RUN python setup.py develop
 
 # PyTorch
-FROM conda as torch
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
 ARG PYTORCH_VERSION
 ENV PYTORCH_VERSION ${PYTORCH_VERSION:-master}
-COPY --from=conda /opt/conda /opt/conda
 WORKDIR /opt/
 RUN git clone https://github.com/pytorch/pytorch.git
 WORKDIR /opt/pytorch
 RUN git checkout ${PYTORCH_VERSION}
 RUN git submodule update --init --recursive --jobs 0
-RUN python setup.py bdist_wheel
+RUN python setup.py develop
 
 # TorchText
-FROM conda as torchtext
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
-COPY --from=torch /opt/pytorch/dist/torch*.whl /opt
-RUN pip install --no-deps /opt/torch*.whl
 ARG TORCHTEXT_VERSION
 ENV TORCHTEXT_VERSION ${TORCHTEXT_VERSION:-main}
 WORKDIR /opt/
@@ -91,13 +80,9 @@ RUN git clone https://github.com/pytorch/text.git torchtext
 WORKDIR /opt/torchtext
 RUN git checkout ${TORCHTEXT_VERSION}
 RUN git submodule update --init --recursive --jobs 0
-RUN unset PYTORCH_VERSION && python setup.py bdist_wheel
+RUN unset PYTORCH_VERSION && python setup.py develop
 
 # TorchVision
-FROM conda as torchvision
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
-COPY --from=torch /opt/pytorch/dist/torch*.whl /opt
-RUN pip install --no-deps /opt/torch*.whl
 ARG TORCHVISION_VERSION
 ENV TORCHVISION_VERSION ${TORCHVISION_VERSION:-main}
 WORKDIR /opt/
@@ -105,13 +90,9 @@ RUN git clone https://github.com/pytorch/vision.git torchvision
 WORKDIR /opt/torchvision
 RUN git checkout ${TORCHVISION_VERSION}
 RUN git submodule update --init --recursive --jobs 0
-RUN unset PYTORCH_VERSION && FORCE_CUDA=1 python setup.py bdist_wheel
+RUN unset PYTORCH_VERSION && FORCE_CUDA=1 python setup.py develop
 
 # TorchAudio
-FROM conda as torchaudio
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
-COPY --from=torch /opt/pytorch/dist/torch*.whl /opt
-RUN pip install --no-deps /opt/torch*.whl
 ARG TORCHAUDIO_VERSION
 ENV TORCHAUDIO_VERSION ${TORCHAUDIO_VERSION:-main}
 WORKDIR /opt/
@@ -127,11 +108,6 @@ RUN git submodule update --init --recursive --jobs 0
 RUN unset PYTORCH_VERSION && USE_CUDA=1 BUILD_SOX=1 python setup.py bdist_wheel
 
 # Detectron2
-FROM conda as detectron2
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
-COPY --from=torch /opt/pytorch/dist/torch*.whl /opt
-COPY --from=torchvision /opt/torchvision/dist/torchvision*.whl /opt
-RUN pip install --no-deps /opt/torch*.whl
 ARG DETECTRON2_VERSION
 ENV DETECTRON2_VERSION ${DETECTRON2_VERSION:-main}
 ENV FORCE_CUDA="1"
@@ -141,13 +117,9 @@ RUN git clone https://github.com/facebookresearch/detectron2.git detectron2
 WORKDIR /opt/detectron2
 RUN git checkout ${DETECTRON2_VERSION}
 RUN git submodule update --init --recursive --jobs 0
-RUN python setup.py bdist_wheel
+RUN python setup.py develop
 
 # ONNX Runtime
-FROM conda as onnxruntime
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
-COPY --from=torch /opt/pytorch/dist/torch*.whl /opt
-RUN pip install --no-deps /opt/torch*.whl
 ARG ONNXRUNTIME_VERSION
 ARG ONNXRUNTIME_BUILD_CONFIG=RelWithDebInfo
 ENV ONNXRUNTIME_VERSION ${ONNXRUNTIME_VERSION:-main}
@@ -168,26 +140,6 @@ RUN bash build.sh \
         --cuda_version=${CUDA_VERSION} \
         --enable_training_torch_interop
 RUN pip install build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
-WORKDIR /workspace
-
-# Main devel image
-FROM conda as devel-all
-ARG ONNXRUNTIME_BUILD_CONFIG=RelWithDebInfo
-SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
-WORKDIR /workspace
-COPY --from=onnx /opt/onnx /opt/onnx
-COPY --from=torch /opt/pytorch /opt/pytorch
-COPY --from=torchtext /opt/torchtext /opt/torchtext
-COPY --from=torchaudio /opt/torchaudio /opt/torchaudio
-COPY --from=torchvision /opt/torchvision /opt/torchvision
-COPY --from=detectron2 /opt/detectron2 /opt/detectron2
-COPY --from=onnxruntime /opt/onnxruntime /opt/onnxruntime
-RUN pip install /opt/onnx/dist/onnx*.whl
-RUN pip install /opt/pytorch/dist/torch*.whl
-RUN pip install /opt/torchtext/dist/torchtext*.whl
-RUN pip install /opt/torchaudio/dist/torchaudio*.whl
-RUN pip install /opt/torchvision/dist/torchvision*.whl
-RUN pip install /opt/detectron2/dist/detectron2*.whl
-RUN pip install /opt/onnxruntime/build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
+WORKDIR /opt
 # TODO: Uncomment after https://github.com/microsoft/onnxruntime/pull/12868
 # RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
