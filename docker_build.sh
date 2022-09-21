@@ -32,7 +32,7 @@ INSTALL_OPENMPI=1
 # Input parsing
 help()
 {
-    echo "Usage: build.sh
+    echo "Usage: docker_build.sh
                 [ -a | --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
                 [ -b | --base_os ]      # Docker image (default is nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04)
                 [ -c | --cuda ]         # CUDA version (default is 11.3.1)
@@ -216,7 +216,7 @@ docker_build(){
     fi
 
     echo "*** docker_build: Building '${_IMAGE_TAG}' ***"
-    nvidia-docker build \
+    docker build \
            --progress=${BUILD_PROGRESS} \
            --build-arg BUILDKIT_INLINE_CACHE=${BUILDKIT_INLINE_CACHE} \
            --cache-from ${BASE_IMAGE} \
@@ -320,15 +320,15 @@ then
     echo -e "WARNING: All targets will be built!\nYou have 10s to abort by hitting CTRL+C..."
     print_env ${BUILD_TARGET} ${UNIQUE_ID} ${DOCKERFILE}
     sleep 10
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} os ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} conda ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} onnx ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torch ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torchtext ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} os ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} conda ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} onnx ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torch ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torchtext ${PUSH_IMAGE}
     docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torchaudio ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torchvision ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} detectron2 ${PUSH_IMAGE}
-    # docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} onnxruntime ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} torchvision ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} detectron2 ${PUSH_IMAGE}
+    docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} onnxruntime ${PUSH_IMAGE}
     docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} __LAST__ ${PUSH_IMAGE}
 else
     docker_build_and_push ${UNIQUE_ID} ${DOCKERFILE} ${BUILD_TARGET} ${PUSH_IMAGE}

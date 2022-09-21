@@ -3,8 +3,6 @@
 # NOTE: To build this you will need a docker version > 18.06 with
 #       experimental enabled and DOCKER_BUILDKIT=1
 #
-#       If you do not use buildkit you are not going to have a good time
-#
 #       For reference:
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
 
@@ -119,6 +117,7 @@ RUN git clone https://github.com/pytorch/kineto
 WORKDIR /opt/kineto
 RUN git submodule update --init --recursive --jobs 0
 RUN mkdir build && cd build && cmake ../libkineto && make  && make install
+RUN rm -rf /opt/kineto
 WORKDIR /opt/
 RUN git clone https://github.com/pytorch/audio.git torchaudio
 WORKDIR /opt/torchaudio
@@ -134,7 +133,6 @@ COPY --from=torchvision /opt/torchvision/dist/torchvision*.whl /opt
 RUN pip install --no-deps /opt/torch*.whl
 ARG DETECTRON2_VERSION
 ENV DETECTRON2_VERSION ${DETECTRON2_VERSION:-main}
-ENV FORCE_CUDA="1"
 ENV FVCORE_CACHE="/tmp"
 WORKDIR /opt/
 RUN git clone https://github.com/facebookresearch/detectron2.git detectron2
@@ -189,5 +187,4 @@ RUN pip install /opt/torchaudio/dist/torchaudio*.whl
 RUN pip install /opt/torchvision/dist/torchvision*.whl
 RUN pip install /opt/detectron2/dist/detectron2*.whl
 RUN pip install /opt/onnxruntime/build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
-# TODO: Uncomment after https://github.com/microsoft/onnxruntime/pull/12868
-# RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
+RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
