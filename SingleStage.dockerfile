@@ -110,7 +110,6 @@ RUN unset PYTORCH_VERSION && USE_CUDA=1 BUILD_SOX=1 python setup.py bdist_wheel
 # Detectron2
 ARG DETECTRON2_VERSION
 ENV DETECTRON2_VERSION ${DETECTRON2_VERSION:-main}
-ENV FORCE_CUDA="1"
 ENV FVCORE_CACHE="/tmp"
 WORKDIR /opt/
 RUN git clone https://github.com/facebookresearch/detectron2.git detectron2
@@ -141,5 +140,4 @@ RUN bash build.sh \
         --enable_training_torch_interop
 RUN pip install build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
 WORKDIR /opt
-# TODO: Uncomment after https://github.com/microsoft/onnxruntime/pull/12868
-# RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
+RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
