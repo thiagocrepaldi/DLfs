@@ -20,11 +20,10 @@ rm /tmp/miniconda.sh
 ${INSTALL_DIR}/bin/conda init bash
 source ~/.bashrc
 
-${INSTALL_DIR}/bin/conda install -y \
+${INSTALL_DIR}/bin/conda install --freeze-installed -y \
     python=${PYTHON_VERSION} \
     astunparse \
     cffi \
-    cmake \
     conda-build \
     dataclasses \
     future \
@@ -37,8 +36,11 @@ ${INSTALL_DIR}/bin/conda install -y \
     six \
     typing_extensions
 
-${INSTALL_DIR}/bin/conda install -y -c pytorch \
+${INSTALL_DIR}/bin/conda install --freeze-installed -y -c pytorch \
     magma-cuda${CUDA_VERSION_ESCAPED}
+
+${INSTALL_DIR}/bin/conda install --freeze-installed -y -c conda-forge \
+    cmake=3.24.3  # ONNX Runtime main branch (>= 1.13) requirement
 
 ${INSTALL_DIR}/bin/python -mpip install --no-deps \
     "cerberus" \

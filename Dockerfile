@@ -6,6 +6,9 @@
 #       For reference:
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
 
+# TODO: How to handle images that already define variables below
+#       e.g. CUDA_VERSION may be set as env var in images, conflicting with the vars below
+
 ARG BASE_IMAGE=nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
 ARG PYTHON_VERSION=3.9
 ARG CUDA_VERSION=11.3

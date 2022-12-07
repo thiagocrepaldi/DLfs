@@ -4,7 +4,7 @@ set -e
 # Docker Builder settings
 export DOCKER_BUILDKIT=1
 export BUILDKIT_INLINE_CACHE=1
-export BUILD_PROGRESS=auto
+export BUILD_PROGRESS=auto  # Use 'plain' for verbose output
 
 # Docker Image settings
 DOCKER_REGISTRY=docker.io
