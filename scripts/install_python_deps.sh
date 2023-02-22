@@ -74,6 +74,7 @@ ${INSTALL_DIR}/bin/python -mpip install --no-deps \
     "tensorboard" \
     "termcolor>=1.1" \
     "timm" \
+    "torchdata" \
     "tqdm>4.29.0" \
     "yacs>=0.1.8"
 

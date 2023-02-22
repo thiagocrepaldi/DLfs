@@ -166,8 +166,7 @@ RUN bash build.sh \
         --build_wheel \
         --parallel \
         --skip_tests \
-        --cuda_version=${CUDA_VERSION} \
-        --enable_training_torch_interop
+        --cuda_version=${CUDA_VERSION}
 RUN pip install build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
 WORKDIR /workspace
 
@@ -183,11 +182,11 @@ COPY --from=torchaudio /opt/torchaudio /opt/torchaudio
 COPY --from=torchvision /opt/torchvision /opt/torchvision
 COPY --from=detectron2 /opt/detectron2 /opt/detectron2
 COPY --from=onnxruntime /opt/onnxruntime /opt/onnxruntime
-RUN pip install /opt/onnx/dist/onnx*.whl
-RUN pip install /opt/pytorch/dist/torch*.whl
-RUN pip install /opt/torchtext/dist/torchtext*.whl
-RUN pip install /opt/torchaudio/dist/torchaudio*.whl
-RUN pip install /opt/torchvision/dist/torchvision*.whl
-RUN pip install /opt/detectron2/dist/detectron2*.whl
-RUN pip install /opt/onnxruntime/build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
-RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
+RUN pip install --no-deps /opt/onnx/dist/onnx*.whl
+RUN pip install --no-deps /opt/pytorch/dist/torch*.whl
+RUN pip install --no-deps /opt/torchtext/dist/torchtext*.whl
+RUN pip install --no-deps /opt/torchaudio/dist/torchaudio*.whl
+RUN pip install --no-deps /opt/torchvision/dist/torchvision*.whl
+RUN pip install --no-deps /opt/detectron2/dist/detectron2*.whl
+RUN pip install --no-deps /opt/onnxruntime/build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
+RUN MKL_SERVICE_FORCE_INTEL=1 ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
