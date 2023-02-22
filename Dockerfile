@@ -190,3 +190,4 @@ RUN pip install --no-deps /opt/torchvision/dist/torchvision*.whl
 RUN pip install --no-deps /opt/detectron2/dist/detectron2*.whl
 RUN pip install --no-deps /opt/onnxruntime/build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
 RUN MKL_SERVICE_FORCE_INTEL=1 ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
+RUN find /opt/conda/lib/ -name "libtinfo*" -exec rm -f '{}' \;  # Ubuntu already has it with version information included
