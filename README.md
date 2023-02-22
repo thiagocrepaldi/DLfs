@@ -38,8 +38,8 @@ The entry point for the build script is docker_build.sh, which has the following
 ```bash
 ./docker_build.sh
                 [ -a | --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
-                [ -b | --base_os ]      # Docker image (default is nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04)
-                [ -c | --cuda ]         # CUDA version (default is 11.3.1)
+                [ -b | --base_os ]      # Docker image (default is nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04)
+                [ -c | --cuda ]         # CUDA version (default is 11.7.1)
                 [ -d | --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
                 [ -e | --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
                 [ -f | --dockerfile ]   # Dockerfile name within root folder (default is Dockerfile)
@@ -51,7 +51,7 @@ The entry point for the build script is docker_build.sh, which has the following
                 [ -i | --id ]           # Unique ID to be added to the resulting Docker image name (default is YYYYMMDD)
                 [ -m | --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
                 [ -o | --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
-                [ -p | --python ]       # python version (default is 3.9)
+                [ -p | --python ]       # python version (default is 3.10)
                 [ -r | --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
                 [ -t | --torch ]        # github.com/pytorch/torch commit/branch/tag (default is master)
                 [ -u | --push ]         # Push image after it is built (default is 1)
@@ -66,7 +66,7 @@ The entry point for the build script is docker_build.sh, which has the following
 Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main/master)
 
 ```bash
-docker_build.sh -a main -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 -c 11.7.1 -d main -e main -o main -p 3.9 -r main -t master -v main -m 1 -f Dockerfile -i 20220231 -g __ALL__
+docker_build.sh -a main -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 -c 11.7.1 -d main -e main -o main -p 3.10 -r main -t master -v main -m 1 -f Dockerfile -i 20230301 -g __ALL__
 ```
 
 ## Limitations
@@ -79,7 +79,7 @@ This is just an initial prototype, so only a few variations of OS, CUDA and Gith
 
 * Only CUDA builds are supported. ROCM and CPU-only were not tested
 
-* Only Python 3.9 was tested
+* Only Python 3.9 and 3.10 were tested
   * Any version >= 3.7 should work, if `scripts/install_python_deps.sh` succeeds
 
 * Each project may have custom build flags, but they are not exposed to docker_build.sh yet

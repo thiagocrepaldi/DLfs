@@ -9,7 +9,7 @@
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
 
 ARG BASE_IMAGE=nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
-ARG PYTHON_VERSION=3.9
+ARG PYTHON_VERSION=3.10
 ARG CUDA_VERSION=11.7
 FROM ${BASE_IMAGE} as os
 SHELL ["/bin/bash", "-c"] # Bash as the default Ubuntu $SHELL
@@ -44,7 +44,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 LABEL com.nvidia.volumes.needed="nvidia_driver"
 
 # Install Python-level deps
-ARG PYTHON_VERSION=3.9
+ARG PYTHON_VERSION=3.10
 RUN source /tmp/install_python_deps.sh ${PYTHON_VERSION} ${CUDA_VERSION}
 SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
 ENV CMAKE_PREFIX_PATH "$(dirname $(which conda))/../"

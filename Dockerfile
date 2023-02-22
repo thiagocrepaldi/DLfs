@@ -10,7 +10,7 @@
 #       e.g. CUDA_VERSION may be set as env var in images, conflicting with the vars below
 
 ARG BASE_IMAGE=nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
-ARG PYTHON_VERSION=3.9
+ARG PYTHON_VERSION=3.10
 ARG CUDA_VERSION=11.7.1
 FROM ${BASE_IMAGE} as os
 SHELL ["/bin/bash", "-c"] # Bash as the default Ubuntu $SHELL
@@ -47,7 +47,7 @@ LABEL com.nvidia.volumes.needed="nvidia_driver"
 
 # Install Python-level deps
 FROM os as conda
-ARG PYTHON_VERSION=3.9
+ARG PYTHON_VERSION=3.10
 RUN source /tmp/install_python_deps.sh ${PYTHON_VERSION} ${CUDA_VERSION}
 SHELL ["/opt/conda/bin/conda", "run", "-n", "base", "/bin/bash", "-c"]  # Make RUN commands use conda environment
 ENV CMAKE_PREFIX_PATH "$(dirname $(which conda))/../"
