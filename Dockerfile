@@ -9,9 +9,9 @@
 # TODO: How to handle images that already define variables below
 #       e.g. CUDA_VERSION may be set as env var in images, conflicting with the vars below
 
-ARG BASE_IMAGE=nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+ARG BASE_IMAGE=nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 ARG PYTHON_VERSION=3.9
-ARG CUDA_VERSION=11.3
+ARG CUDA_VERSION=11.7.1
 FROM ${BASE_IMAGE} as os
 SHELL ["/bin/bash", "-c"] # Bash as the default Ubuntu $SHELL
 
@@ -190,4 +190,5 @@ RUN pip install --no-deps /opt/torchvision/dist/torchvision*.whl
 RUN pip install --no-deps /opt/detectron2/dist/detectron2*.whl
 RUN pip install --no-deps /opt/onnxruntime/build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
 RUN MKL_SERVICE_FORCE_INTEL=1 ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
-RUN find /opt/conda/lib/ -name "libtinfo*" -exec rm -f '{}' \;  # Ubuntu already has it with version information included
+RUN find /opt/conda/lib/ -name "libtinfo*" -exec rm -f '{}' \;                              # Ubuntu has it installed with version info
+#RUN find /usr/lib/x86_64-linux-gnu/ -name "libtinfo.*" -exec ln -s '{}' /opt/conda/lib/ \;  # Let's use that for conda

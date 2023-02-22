@@ -66,7 +66,7 @@ The entry point for the build script is docker_build.sh, which has the following
 Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main/master)
 
 ```bash
-docker_build.sh -a main -b nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04 -c 11.3.1 -d main -e main -o main -p 3.9 -r main -t master -v main -m 1 -f Dockerfile -i 20220231 -g __ALL__
+docker_build.sh -a main -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 -c 11.7.1 -d main -e main -o main -p 3.9 -r main -t master -v main -m 1 -f Dockerfile -i 20220231 -g __ALL__
 ```
 
 ## Limitations
@@ -75,7 +75,7 @@ This is just an initial prototype, so only a few variations of OS, CUDA and Gith
 
 * Only the development branches of the listed projects above were tested
 
-* Only Ubuntu 20.04 OS with CUDA 11.3.1 was tested
+* Only Ubuntu 20.04 + CUDA 11.3.1 and Ubuntu 22.04 + CUDA 11.7.1 were tested
 
 * Only CUDA builds are supported. ROCM and CPU-only were not tested
 

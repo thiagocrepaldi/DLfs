@@ -8,9 +8,9 @@
 #       For reference:
 #           https://docs.docker.com/develop/develop-images/build_enhancements/
 
-ARG BASE_IMAGE=nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+ARG BASE_IMAGE=nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 ARG PYTHON_VERSION=3.9
-ARG CUDA_VERSION=11.3
+ARG CUDA_VERSION=11.7
 FROM ${BASE_IMAGE} as os
 SHELL ["/bin/bash", "-c"] # Bash as the default Ubuntu $SHELL
 
@@ -140,4 +140,4 @@ RUN bash build.sh \
         --enable_training_torch_interop
 RUN pip install build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
 WORKDIR /opt
-RUN ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
+RUN MKL_SERVICE_FORCE_INTEL=1 ONNXRUNTIME_FORCE_CUDA=1 python -m onnxruntime.training.ortmodule.torch_cpp_extensions.install
