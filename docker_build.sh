@@ -35,37 +35,34 @@ INSTALL_OPENMPI=0
 help()
 {
     echo "Usage: docker_build.sh
-                [ -a | --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
-                [ -b | --base_os ]      # Docker image (default is ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest)
-                [ -c | --cuda ]         # CUDA version (default is 11.7.0)
-                [ -d | --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
-                [ -e | --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
-                [ -f | --dockerfile ]   # Dockerfile name within root folder (default is Dockerfile)
-                [ -g | --target ]       # Docker build target (default is __ALL__)
-                                        # One of (__ALL__, __LAST__, os, conda, onnx, torch, torchtext, torchaudio, torchvision, detectron2, onnxruntime)
-                                        #         __ALL__ must be set to build all targets available (only for multi-stage Dockerfile)
-                                        #         __LAST__ must be set to build the last stage which combines all previous (only for multi-stage Dockerfile)
-                [ -i | --id ]           # Unique ID to be added to the resulting Docker image name (default is YYYYMMDD)
-                [ -m | --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
-                [ -l | --protobuf ]     # Builds Protobuf from source (tarball) (default is 1)
-                [ -o | --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
-                [ -p | --python ]       # python version (default is 3.8)
-                [ -r | --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
-                [ -t | --torch ]        # github.com/pytorch/torch commit/branch/tag (default is main)
-                [ -u | --push ]         # Push image after it is built (default is 1)
-                [ -v | --torchvision ]  # github.com/pytorch/torchvision commit/branch/tag (default is main)
-                [ -x | --onnxscript ]   # github.com/microsoft/onnxscript commit/branch/tag (default is main)
-                [ -h | --help  ]        # This message :)
+                [ --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
+                [ --base ]         # Docker image (default is ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest)
+                [ --cuda ]         # CUDA version (default is 11.7.0)
+                [ --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
+                [ --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
+                [ --dockerfile ]   # Dockerfile name within root folder (default is Dockerfile)
+                [ --target ]       # Docker build target (default is __ALL__)
+                                        # One of (__ALL__, __LAST__, os, conda, onnx, onnxscript, torch, torchtext, torchaudio, torchvision, detectron2, onnxruntime)
+                                        #         __ALL__ must be set to build all targets available
+                                        #         __LAST__ must be set to build the last stage which combines all previous
+                [ --id ]           # Unique ID to be added to the resulting Docker image name (default is YYYYMMDD)
+                [ --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
+                [ --protobuf ]     # Builds Protobuf from source (tarball) (default is 1)
+                [ --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
+                [ --python ]       # python version (default is 3.8)
+                [ --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
+                [ --torch ]        # github.com/pytorch/torch commit/branch/tag (default is main)
+                [ --push ]         # Push image after it is built (default is 1)
+                [ --torchvision ]  # github.com/pytorch/torchvision commit/branch/tag (default is main)
+                [ --onnxscript ]   # github.com/microsoft/onnxscript commit/branch/tag (default is main)
+                [ -h | --help  ]   # This message :)
 
         IMPORTANT: ALL parameters, but -h, MUST be specified. If you know how to getopts to play nice with optional arguments, please fix this :)
-
-        EXAMPLE: Build all stages of Dockerfile and push them to docker.io/thiagocrepaldi/dlfs:devel-ID-<build_stage>
-            ./docker_build.sh -a main -b ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest -c 11.7.0 -d main -e main -f Dockerfile -g __ALL__ -i 20230518 -l 1 -m 0 -o main -p 3.8 -r main -t main -u 0 -v main -x main
         "
     exit 2
 }
 SHORT=a:,b:,c:,d:,e:,f:,g:,i:,l:,m:,o:,p:,r:,t:,u:,v:,x:,h
-LONG=torchaudio:,base_os:,cuda:,detectron2:,torchtext:,dockerfile:,target:,id:,protobuf:,openmpi:,onnx:,python:,onnxruntime:,torch:,push:,torchvision:,onnxscript:,help
+LONG=torchaudio:,base:,cuda:,detectron2:,torchtext:,dockerfile:,target:,id:,protobuf:,openmpi:,onnx:,python:,onnxruntime:,torch:,push:,torchvision:,onnxscript:,help
 OPTS=$(getopt -a -n build --options $SHORT --longoptions $LONG -- "$@")
 VALID_ARGUMENTS=$#  # Returns the count of arguments that are in short or long options
 if [ ! "$VALID_ARGUMENTS" -eq 34 ]
@@ -80,7 +77,7 @@ do
       TORCHAUDIO_VERSION="$2"
       shift 2
       ;;
-    -b | --base_os )
+    -b | --base )
       BASE_IMAGE="$2"
       shift 2
       ;;

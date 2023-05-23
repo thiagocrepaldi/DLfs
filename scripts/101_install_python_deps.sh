@@ -6,12 +6,13 @@ set -e -x
 # Merge contents from their requirements.txt and setup.py::setup(..., install_requires=)
 
 ONNX_VERSION=${1-main}
-PYTORCH_VERSION=${2-main}
-TORCHTEXT_VERSION=${3-main}
-TORCHVISION_VERSION=${4-main}
-TORCHAUDIO_VERSION=${5-main}
-DETECTRON2_VERSION=${6-main}
-ONNXRUNTIME_VERSION=${7-main}
+ONNXSCRIPT_VERSION=${2-main}
+PYTORCH_VERSION=${3-main}
+TORCHTEXT_VERSION=${4-main}
+TORCHVISION_VERSION=${5-main}
+TORCHAUDIO_VERSION=${6-main}
+DETECTRON2_VERSION=${7-main}
+ONNXRUNTIME_VERSION=${8-main}
 
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)

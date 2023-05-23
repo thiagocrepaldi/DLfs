@@ -39,30 +39,30 @@ The entry point for the build script is docker_build.sh, which has the following
 
 ```bash
 ./docker_build.sh
-                [ -a | --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
-                [ -b | --base_os ]      # Docker image (default is ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest)
-                [ -c | --cuda ]         # CUDA version (default is 11.7.0)
-                [ -d | --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
-                [ -e | --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
-                [ -f | --dockerfile ]   # Dockerfile name within root folder (default is Dockerfile)
-                [ -g | --target ]       # Docker build target (default is __ALL__)
+                [ --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
+                [ --base ]         # Docker image (default is ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest)
+                [ --cuda ]         # CUDA version (default is 11.7.0)
+                [ --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
+                [ --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
+                [ --dockerfile ]   # Dockerfile name within root folder (default is Dockerfile)
+                [ --target ]       # Docker build target (default is __ALL__)
                                         # One of (__ALL__, __LAST__, os, conda, onnx, torch, torchtext, torchaudio, torchvision, detectron2, onnxruntime)
                                         #         __ALL__ must be set to build all targets available (only for multi-stage Dockerfile)
                                         #         __LAST__ must be set to build the last stage which combines all previous (only for multi-stage Dockerfile)
-                [ -i | --id ]           # Unique ID to be added to the resulting Docker image name (default is YYYYMMDD)
-                [ -m | --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
-                [ -l | --protobuf ]     # Builds Protobuf from source (tarball) (default is 1)
-                [ -o | --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
-                [ -p | --python ]       # python version (default is 3.8)
-                [ -r | --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
-                [ -t | --torch ]        # github.com/pytorch/torch commit/branch/tag (default is main)
-                [ -u | --push ]         # Push image after it is built (default is 1)
-                [ -v | --torchvision ]  # github.com/pytorch/torchvision commit/branch/tag (default is main)
-                [ -x | --onnxscript ]   # github.com/microsoft/onnxscript commit/branch/tag (default is main)
-                [ -h | --help  ]        # This message :)
+                [ --id ]           # Unique ID to be added to the resulting Docker image name (default is YYYYMMDD)
+                [ --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
+                [ --protobuf ]     # Builds Protobuf from source (tarball) (default is 1)
+                [ --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
+                [ --python ]       # python version (default is 3.8)
+                [ --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
+                [ --torch ]        # github.com/pytorch/torch commit/branch/tag (default is main)
+                [ --push ]         # Push image after it is built (default is 1)
+                [ --torchvision ]  # github.com/pytorch/torchvision commit/branch/tag (default is main)
+                [ --onnxscript ]   # github.com/microsoft/onnxscript commit/branch/tag (default is main)
+                [ -h | --help  ]   # This message :)
 ```
 
-**IMPORTANT:** ALL parameters (except `-h`), **MUST** be specified. If you know how to getopts to play nice with optional arguments, please contribute. It would be great to have default values and only specifying the ones we care about!
+**IMPORTANT:** ALL parameters (except `--help`), **MUST** be specified. If you know how to getopts to play nice with optional arguments, please contribute. It would be great to have default values and only specifying the ones we care about!
 
 ### Access to private base images
 
@@ -90,48 +90,76 @@ After both steps, you are ready to pull image from your private repo. Enjoy!
 Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
 
 ```bash
-docker_build.sh -a main \
-  -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.0 \
-  -c 11.7.1 \
-  -d main \
-  -e main \
-  -f Dockerfile \
-  -g __ALL__ \
-  -i 20230518 \
-  -l 1 \
-  -m 0 \
-  -o main \
-  -p 3.10 \
-  -r main \
-  -t main \
-  -u 0 \
-  -v main \
-  -x main
+docker_build.sh \
+  --torchaudio main \
+  --base nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.0 \
+  --cuda 11.7.1 \
+  --detectron2 main \
+  --torchtext main \
+  --dockerfile Dockerfile \
+  --target __ALL__ \
+  --id 20230518 \
+  --protobuf 1 \
+  --openmpi 0 \
+  --onnx main \
+  --python 3.10 \
+  --onnxruntime main \
+  --torch   main \
+  --push  0 \
+  --torchvision  main \
+  --onnxscript  main
 ```
 
-### Example using ACPT's private CUDA image
+### Example using ACPT's private CUDA image (nightly)
 
 Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
-It assumes you have autheticated your session on ACPT's registry.
+It assumes you have authenticated your session on ACPT's registry.
 
 ```bash
-docker_build.sh -a main \
-  -b ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest \
-  -c 11.7.0 \
-  -d main \
-  -e main \
-  -f Dockerfile \
-  -g __ALL__ \
-  -i 20230518 \
-  -l 1 \
-  -m 0 \
-  -o main \
-  -p 3.8 \
-  -r main \
-  -t main \
-  -u 0 \
-  -v main \
-  -x main
+docker_build.sh \
+  --torchaudio main \
+  --base ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest \
+  --cuda 11.7.0 \
+  --detectron2 main \
+  --torchtext main \
+  --dockerfile Dockerfile \
+  --target __ALL__ \
+  --id 20230518 \
+  --protobuf 1 \
+  --openmpi 0 \
+  --onnx main \
+  --python 3.8 \
+  --onnxruntime main \
+  --torch   main \
+  --push  0 \
+  --torchvision  main \
+  --onnxscript  main
+```
+
+### Example using ACPT's private CUDA image (stable)
+
+Below is an example on how to build the docker image with stable releases for all projects.
+It assumes you have authenticated your session on ACPT's registry.
+
+```bash
+docker_build.sh \
+  --torchaudio v2.0.2 \
+  --base ptebic.azurecr.io/public/azureml/aifx/stable-ubuntu2004-cu117-py39-torch201:latest \
+  --cuda 11.7.0 \
+  --detectron2 main \
+  --torchtext v0.15.1 \
+  --dockerfile Dockerfile \
+  --target __ALL__ \
+  --id 20230518 \
+  --protobuf 0 \
+  --openmpi 0 \
+  --onnx v1.14.0 \
+  --python 3.8 \
+  --onnxruntime v1.14.1 \
+  --torch   v2.0.1 \
+  --push  0 \
+  --torchvision  v0.15.1 \
+  --onnxscript  main
 ```
 
 ## Limitations
