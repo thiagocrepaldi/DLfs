@@ -1,4 +1,4 @@
-# DLfs
+# Deep Learning From Scratch (aka DLfs)
 
 Deep Learning From Scratch is a tool that creates a Docker image with the
 most used frameworks and libraries used by PyTorch and ONNX Runtime engineers at Microsoft.
@@ -10,6 +10,8 @@ The following projects are compiled from source:
   * With CUDA support
 * [ONNX](https://github.com/onnx/onnx)
   * Source-code at /opt/onnx
+* [ONNX Script](https://github.com/microsoft/onnxscript)
+  * Source-code at /opt/onnxscript
 * [ONNX Runtime](https://github.com/mirosoft/onnxruntime)
   * Source-code at /opt/onnxruntime
   * With CUDA support
@@ -38,35 +40,98 @@ The entry point for the build script is docker_build.sh, which has the following
 ```bash
 ./docker_build.sh
                 [ -a | --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
-                [ -b | --base_os ]      # Docker image (default is nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04)
-                [ -c | --cuda ]         # CUDA version (default is 11.7.1)
+                [ -b | --base_os ]      # Docker image (default is ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest)
+                [ -c | --cuda ]         # CUDA version (default is 11.7.0)
                 [ -d | --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
                 [ -e | --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
                 [ -f | --dockerfile ]   # Dockerfile name within root folder (default is Dockerfile)
                 [ -g | --target ]       # Docker build target (default is __ALL__)
-                                        # One of (__NONE__, __ALL__, __LAST__, os, conda, onnx, torch, torchtext, torchaudio, torchvision, detectron2, onnxruntime)
-                                        #         __NONE__ must be set for single-stage DOCKERFILE (only for single-stage Dockerfile)
+                                        # One of (__ALL__, __LAST__, os, conda, onnx, torch, torchtext, torchaudio, torchvision, detectron2, onnxruntime)
                                         #         __ALL__ must be set to build all targets available (only for multi-stage Dockerfile)
                                         #         __LAST__ must be set to build the last stage which combines all previous (only for multi-stage Dockerfile)
                 [ -i | --id ]           # Unique ID to be added to the resulting Docker image name (default is YYYYMMDD)
                 [ -m | --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
+                [ -l | --protobuf ]     # Builds Protobuf from source (tarball) (default is 1)
                 [ -o | --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
-                [ -p | --python ]       # python version (default is 3.10)
+                [ -p | --python ]       # python version (default is 3.8)
                 [ -r | --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
-                [ -t | --torch ]        # github.com/pytorch/torch commit/branch/tag (default is master)
+                [ -t | --torch ]        # github.com/pytorch/torch commit/branch/tag (default is main)
                 [ -u | --push ]         # Push image after it is built (default is 1)
                 [ -v | --torchvision ]  # github.com/pytorch/torchvision commit/branch/tag (default is main)
+                [ -x | --onnxscript ]   # github.com/microsoft/onnxscript commit/branch/tag (default is main)
                 [ -h | --help  ]        # This message :)
 ```
 
 **IMPORTANT:** ALL parameters (except `-h`), **MUST** be specified. If you know how to getopts to play nice with optional arguments, please contribute. It would be great to have default values and only specifying the ones we care about!
 
-### Example
+### Access to private base images
 
-Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main/master)
+In order to use private base images, such as Azure Container for PyTorch (ACPT)'s internal images,
+you must be authenticate to the Azure CR service before calling `docker_build.sh`.
+
+The first step is to authenticate to Docker hub registry or Azure CR.
+The snippet below shows an example for Azure CR:
 
 ```bash
-docker_build.sh -a main -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 -c 11.7.1 -d main -e main -o main -p 3.10 -r main -t master -v main -m 1 -f Dockerfile -i 20230301 -g __ALL__
+az login --use-device-code
+```
+
+One authenticated to the registry, you need to authenticate against the desired repository.
+The snippet below shows an example for ACPT:
+
+```bash
+az acr login --name ptebic
+```
+
+After both steps, you are ready to pull image from your private repo. Enjoy!
+
+### Example using NVIDIA's public CUDA image
+
+Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
+
+```bash
+docker_build.sh -a main \
+  -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.0 \
+  -c 11.7.1 \
+  -d main \
+  -e main \
+  -f Dockerfile \
+  -g __ALL__ \
+  -i 20230518 \
+  -l 1 \
+  -m 0 \
+  -o main \
+  -p 3.10 \
+  -r main \
+  -t main \
+  -u 0 \
+  -v main \
+  -x main
+```
+
+### Example using ACPT's private CUDA image
+
+Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
+It assumes you have autheticated your session on ACPT's registry.
+
+```bash
+docker_build.sh -a main \
+  -b ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest \
+  -c 11.7.0 \
+  -d main \
+  -e main \
+  -f Dockerfile \
+  -g __ALL__ \
+  -i 20230518 \
+  -l 1 \
+  -m 0 \
+  -o main \
+  -p 3.8 \
+  -r main \
+  -t main \
+  -u 0 \
+  -v main \
+  -x main
 ```
 
 ## Limitations
@@ -74,17 +139,25 @@ docker_build.sh -a main -b nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 -c 11.7.1
 This is just an initial prototype, so only a few variations of OS, CUDA and Github projects were tested. In special:
 
 * Only the development branches of the listed projects above were tested
+  * Stable releases should work, as long as dependencies are properly satisfied by `scripts/101_install_python_deps.sh`
 
-* Only Ubuntu 20.04 + CUDA 11.3.1 and Ubuntu 22.04 + CUDA 11.7.1 were tested
+* The following OS + CUDA environments were tested
+  * Ubuntu 20.04 + CUDA 11.3.1 (nvidia:cuda base image)
+  * Ubuntu 20.04 + CUDA 11.7.0 (ACPT base image)
+  * Ubuntu 22.04 + CUDA 11.7.1 (nvidia:cuda base image)
 
-* Only CUDA builds are supported. ROCM and CPU-only were not tested
+* Only CUDA builds are supported
+  * ROCM and CPU-only might work, but were not tested
 
-* Only Python 3.9 and 3.10 were tested
-  * Any version >= 3.7 should work, if `scripts/install_python_deps.sh` succeeds
+* The following python versions are supported:
+  * 3.8
+  * 3.9
+  * 3.10 were tested
+  * Any version >= 3.7 should work, if `scripts/101_install_python_deps.sh` succeeds
 
 * Each project may have custom build flags, but they are not exposed to docker_build.sh yet
-  * Some flags are available as `ARG` at `Dockerfile` and can be manually overriden
-  * Others flags are directly hard-coded to the `RUN` at `Dockerfile` and probably should be refactored into `ARG` arguments.
+  * Some flags are available as `ARG` at `Dockerfile` and can be manually overridden
+  * Others flags are directly hard-coded to the `RUN` at `Dockerfile` or each project's bash script
 
 * There is no official pre-built docker images from Microsoft
   * The plan is to have nightly builds publishing Docker images with latest development branches
