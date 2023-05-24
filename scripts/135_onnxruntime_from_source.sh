@@ -23,16 +23,16 @@ git checkout ${ONNXRUNTIME_VERSION}
 git submodule sync
 git submodule update --init --recursive --jobs 0
 
-bash build.sh \
-        --config ${ONNXRUNTIME_BUILD_CONFIG} \
-        --build_shared_lib \
-        --allow_running_as_root \
-        --enable_training \
-        --use_cuda \
-        --cuda_home ${CUDA_HOME} \
-        --cudnn_home ${CUDNN_HOME} \
-        --build_wheel \
-        --parallel \
-        --skip_tests \
-        --cmake_extra_defines '"CMAKE_CUDA_ARCHITECTURES='${CMAKE_CUDA_ARCHITECTURES}'"' \
-        --cuda_version=${CUDA_VERSION}
+ONNXRUNTIME_BUILD_COMMAND="--config ${ONNXRUNTIME_BUILD_CONFIG}
+--build_shared_lib
+--enable_training
+--use_cuda
+--cuda_home ${CUDA_HOME}
+--cudnn_home ${CUDNN_HOME}
+--build_wheel
+--parallel
+--skip_tests
+--cmake_extra_defines '\"CMAKE_CUDA_ARCHITECTURES='${CMAKE_CUDA_ARCHITECTURES}'\"'
+--cuda_version=${CUDA_VERSION}"
+
+bash build.sh ${ONNXRUNTIME_BUILD_COMMAND} || bash build.sh ${ONNXRUNTIME_BUILD_COMMAND} --allow_running_as_root

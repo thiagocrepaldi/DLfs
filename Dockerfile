@@ -117,7 +117,7 @@ COPY --from=torch /opt/pytorch/dist/torch*.whl /opt
 COPY --from=torchvision /opt/torchvision/dist/torchvision-*.whl /opt
 RUN pip install --no-deps /opt/torch*.whl
 WORKDIR /opt/
-RUN ${DOCKER_SCRIPTS}/130_detectron2_from_source.sh ${TORCHAUDIO_VERSION}
+RUN ${DOCKER_SCRIPTS}/130_detectron2_from_source.sh ${DETECTRON2_VERSION}
 
 # ONNX Runtime
 FROM conda as onnxruntime

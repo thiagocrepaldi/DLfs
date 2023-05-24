@@ -92,7 +92,7 @@ Below is an example on how to build the docker image with all projects pointing 
 ```bash
 docker_build.sh \
   --torchaudio main \
-  --base nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.0 \
+  --base nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 \
   --cuda 11.7.1 \
   --detectron2 main \
   --torchtext main \
