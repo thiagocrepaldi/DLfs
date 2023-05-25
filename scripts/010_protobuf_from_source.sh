@@ -4,7 +4,7 @@ set -e -x
 INSTALL_PROTOBUF=${1:-0}
 PROTOBUF_VERSION=${2:-v3.20.2}
 
-if [ "${INSTALL_PROTOBUF}" == "1" ]
+if [ "${INSTALL_PROTOBUF}" == "1" ] && [ ! -d protobuf ]
 then
     echo "Installing protobuf ${PROTOBUF_VERSION} from source"
     git clone https://github.com/protocolbuffers/protobuf.git

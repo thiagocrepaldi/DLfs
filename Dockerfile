@@ -40,8 +40,8 @@ LABEL com.nvidia.volumes.needed="nvidia_driver"
 
 # Install OS-level deps, including CUDA
 COPY scripts/ ${DOCKER_SCRIPTS}
-RUN bash ${DOCKER_SCRIPTS}/000_ubuntu_apt_packages.sh
-RUN bash ${DOCKER_SCRIPTS}/005_cmake_from_tarball.sh 3.26.0
+RUN ${DOCKER_SCRIPTS}/000_ubuntu_apt_packages.sh
+RUN ${DOCKER_SCRIPTS}/005_cmake_from_tarball.sh 3.26.0
 RUN ${DOCKER_SCRIPTS}/010_protobuf_from_source.sh ${INSTALL_PROTOBUF} v3.20.2
 RUN ${DOCKER_SCRIPTS}/015_openmpi4_from_source.sh ${INSTALL_OPENMPI} 4.0.4
 

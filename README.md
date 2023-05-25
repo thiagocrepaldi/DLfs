@@ -2,8 +2,10 @@
 
 Deep Learning From Scratch is a tool that creates a Docker image with the
 most used frameworks and libraries used by PyTorch and ONNX Runtime engineers at Microsoft.
+It can also be used to update an existing environment by replacing installed packages by
+their compiled from source versions.
 
-The following projects are compiled from source:
+The following projects can compiled from source:
 
 * [Detectron2](https://github.com/facebookresearch/detectron2)
   * Source-code at /opt/detectron2
@@ -33,12 +35,11 @@ The following projects are compiled from source:
 
 Although all source-code (and compiled files) are kept inside the image for easy access/recompilation, they are also pip-installed on the default (aka base) /opt/conda miniconda3 environment
 
-## Building the docker image
+## Building a Docker image from scratch
 
 The entry point for the build script is docker_build.sh, which has the following usage interface:
 
 ```bash
-./docker_build.sh
                 [ --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
                 [ --base ]         # Docker image (default is ptebic.azurecr.io/internal/azureml/aifx/nightly-ubuntu2004-cu117-py38-torch210dev:latest)
                 [ --cuda ]         # CUDA version (default is 11.7.0)
@@ -137,27 +138,50 @@ docker_build.sh \
   --onnxscript  main
 ```
 
-### Example using NVIDIA's public CUDA image (WORK IN PROGRESS)
+## Updating an existing environment from scratch
 
-Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
+The entry point for the build script is docker_build.sh, which has the following usage interface:
 
 ```bash
-docker_build.sh \
+                [ --torchaudio ]   # github.com/pytorch/audio commit/branch/tag (default is main)
+                [ --cuda ]         # CUDA version (default is 11.7.0)
+                [ --detectron2 ]   # github.com/facebookresearch/detectron2 commit/branch/tag (default is main)
+                [ --torchtext ]    # github.com/pytorch/text commit/branch/tag (default is main)
+                [ --target ]       # Build target (default is __ALL__)
+                                        # One of (__ALL__, __LAST__, os, conda, onnx, onnxscript, torch, torchtext, torchaudio, torchvision, detectron2, onnxruntime)
+                                        #         __ALL__ must be set to build all targets available
+                [ --openmpi ]      # Builds open MPI 4.0 from source (tarball) (default is 1)
+                [ --protobuf ]     # Builds Protobuf from source (tarball) (default is 1)
+                [ --onnx ]         # github.com/onnx/onnx commit/branch/tag (default is main)
+                [ --python ]       # python version (default is 3.8)
+                [ --onnxruntime ]  # github.com/microsoft/onnxruntime commit/branch/tag (default is main)
+                [ --torch ]        # github.com/pytorch/torch commit/branch/tag (default is main)
+                [ --torchvision ]  # github.com/pytorch/torchvision commit/branch/tag (default is main)
+                [ --onnxscript ]   # github.com/microsoft/onnxscript commit/branch/tag (default is main)
+                [ --scripts ]      # Path to build scripts
+                [ -h | --help  ]   # This message :)
+```
+
+IMPORTANT: ALL parameters, but -h, MUST be specified. If you know how to getopts to play nice with optional arguments, please fix this :)
+
+### Example updating environment with nightly builds
+
+Below is an example on how to build all projects pointing to their latest development branch (aka main).
+
+```bash
+build_from_source.sh \
+  --scripts /opt/scripts \
   --torchaudio main \
-  --base nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 \
-  --cuda 11.7.1 \
+  --cuda 11.7.0 \
   --detectron2 main \
   --torchtext main \
-  --dockerfile Dockerfile \
   --target __ALL__ \
-  --id 20230518 \
   --protobuf 1 \
   --openmpi 0 \
   --onnx main \
-  --python 3.10 \
+  --python 3.8 \
   --onnxruntime main \
   --torch   main \
-  --push  0 \
   --torchvision  main \
   --onnxscript  main
 ```
@@ -183,9 +207,7 @@ This is just an initial prototype, so only a few variations of OS, CUDA and Gith
   * 3.10 were tested
   * Any version >= 3.7 should work, if `scripts/101_install_python_deps.sh` succeeds
 
-* Each project may have custom build flags, but they are not exposed to docker_build.sh yet
-  * Some flags are available as `ARG` at `Dockerfile` and can be manually overridden
-  * Others flags are directly hard-coded to the `RUN` at `Dockerfile` or each project's bash script
+* Each project may have custom build flags, but they are not exposed to docker_build.sh nor build_from_source.sh yet
 
 * There is no official pre-built docker images from Microsoft
   * The plan is to have nightly builds publishing Docker images with latest development branches

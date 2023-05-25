@@ -4,12 +4,13 @@ set -e -x
 INSTALL_OPENMPI=${1:-0}
 OPENMPI_VERSION=${2:-4.0.4}
 
-if [ "${INSTALL_OPENMPI}" == "1" ]
+FILENAME=openmpi-${OPENMPI_VERSION}.tar.gz
+FOLDER_NAME=openmpi-${OPENMPI_VERSION}
+
+if [ "${INSTALL_OPENMPI}" == "1" ] && [ ! -d ${FOLDER_NAME} ]
 then
     # install Open MPI
     echo "Installing Open MPI ${OPENMPI_VERSION} from source"
-    FILENAME=openmpi-${OPENMPI_VERSION}.tar.gz
-    FOLDER_NAME=openmpi-${OPENMPI_VERSION}
     URL=https://download.open-mpi.org/release/open-mpi/v4.0/${FILENAME}
     curl -fsSL ${URL} -O
     tar zxf ${FILENAME}
