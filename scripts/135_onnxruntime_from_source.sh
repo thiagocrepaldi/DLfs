@@ -10,6 +10,7 @@ CUDA_HOME=/usr/local/cuda/
 CUDNN_HOME=/usr/lib/x86_64-linux-gnu/
 CMAKE_CUDA_ARCHITECTURES="37;50;52;60;61;70;75;80"
 
+source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)
 

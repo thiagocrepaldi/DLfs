@@ -14,6 +14,7 @@ TORCHAUDIO_VERSION=${6-main}
 DETECTRON2_VERSION=${7-main}
 ONNXRUNTIME_VERSION=${8-main}
 
+source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)
 

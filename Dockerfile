@@ -25,6 +25,8 @@ ARG INSTALL_PROTOBUF
 ARG DOCKER_SCRIPTS=/opt/scripts/
 
 # Global (read-only) settings
+ENV CONDA_INSTALL_DIR="/opt/conda"
+ENV DEFAULT_CONDA_ENV="ptca"
 ENV DEBIAN_FRONTEND="noninteractive"
 ENV CUDA_HOME=/usr/local/cuda
 ENV CUDA_VERSION=${CUDA_VERSION}

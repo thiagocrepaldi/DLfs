@@ -85,31 +85,6 @@ az acr login --name ptebic
 
 After both steps, you are ready to pull image from your private repo. Enjoy!
 
-### Example using NVIDIA's public CUDA image
-
-Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
-
-```bash
-docker_build.sh \
-  --torchaudio main \
-  --base nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 \
-  --cuda 11.7.1 \
-  --detectron2 main \
-  --torchtext main \
-  --dockerfile Dockerfile \
-  --target __ALL__ \
-  --id 20230518 \
-  --protobuf 1 \
-  --openmpi 0 \
-  --onnx main \
-  --python 3.10 \
-  --onnxruntime main \
-  --torch   main \
-  --push  0 \
-  --torchvision  main \
-  --onnxscript  main
-```
-
 ### Example using ACPT's private CUDA image (nightly)
 
 Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
@@ -159,6 +134,31 @@ docker_build.sh \
   --torch   v2.0.1 \
   --push  0 \
   --torchvision  v0.15.1 \
+  --onnxscript  main
+```
+
+### Example using NVIDIA's public CUDA image (WORK IN PROGRESS)
+
+Below is an example on how to build the docker image with all projects pointing to their latest development branch (aka main).
+
+```bash
+docker_build.sh \
+  --torchaudio main \
+  --base nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04 \
+  --cuda 11.7.1 \
+  --detectron2 main \
+  --torchtext main \
+  --dockerfile Dockerfile \
+  --target __ALL__ \
+  --id 20230518 \
+  --protobuf 1 \
+  --openmpi 0 \
+  --onnx main \
+  --python 3.10 \
+  --onnxruntime main \
+  --torch   main \
+  --push  0 \
+  --torchvision  main \
   --onnxscript  main
 ```
 

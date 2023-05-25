@@ -6,6 +6,7 @@ unset PYTORCH_BUILD_NUMBER
 unset PYTORCH_BUILD_VERSION
 PYTORCH_VERSION=${1}
 
+source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)
 

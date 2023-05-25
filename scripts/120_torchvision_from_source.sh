@@ -6,6 +6,7 @@ TORCHVISION_VERSION=${1}
 unset PYTORCH_VERSION
 export FORCE_CUDA=1
 
+source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)
 

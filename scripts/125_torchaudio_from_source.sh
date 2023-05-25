@@ -8,6 +8,7 @@ export BUILD_SOX=1
 export USE_CUDA=1
 export USE_FFMPEG=1
 
+source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)
 

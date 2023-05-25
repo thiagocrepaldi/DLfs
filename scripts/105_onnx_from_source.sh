@@ -4,6 +4,7 @@ set -e -x
 # Can be a tag, commit or branch
 ONNX_VERSION=${1}
 
+source /root/.bashrc && source /opt/conda/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
 PYTHON_PATH=$(which python)
 
