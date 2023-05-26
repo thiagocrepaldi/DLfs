@@ -4,6 +4,8 @@ set -e -x
 # Can be a tag, commit or branch
 TORCHAUDIO_VERSION=${1}
 INSTALL_AFTER_BUILD=${2:-0}
+ROOT_DIR=${3:-"/opt"}
+cd ${ROOT_DIR}
 
 unset PYTORCH_VERSION
 export BUILD_SOX=1
@@ -33,5 +35,6 @@ git submodule update --init --recursive --jobs 0
 python setup.py bdist_wheel
 if [ "${INSTALL_AFTER_BUILD}" == "1" ]
 then
+    pip uninstall -y torchaudio
     pip install dist/torchaudio*.whl
 fi

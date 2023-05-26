@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e -x
 
-INSTALL_OPENMPI=${1:-0}
-OPENMPI_VERSION=${2:-4.0.4}
+INSTALL_OPENMPI=${1:-"0"}
+OPENMPI_VERSION=${2:-"4.0.4"}
+ROOT_DIR=${3:-"/opt"}
+cd ${ROOT_DIR}
 
 FILENAME=openmpi-${OPENMPI_VERSION}.tar.gz
 FOLDER_NAME=openmpi-${OPENMPI_VERSION}

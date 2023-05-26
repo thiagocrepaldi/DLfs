@@ -6,6 +6,8 @@ ONNXRUNTIME_VERSION=${1}
 ONNXRUNTIME_BUILD_CONFIG=${2}
 CUDA_VERSION=${3}
 INSTALL_AFTER_BUILD=${4:-0}
+ROOT_DIR=${5:-"/opt"}
+cd ${ROOT_DIR}
 
 CUDA_HOME=/usr/local/cuda/
 CUDNN_HOME=/usr/lib/x86_64-linux-gnu/
@@ -46,5 +48,6 @@ ONNXRUNTIME_BUILD_COMMAND="--config ${ONNXRUNTIME_BUILD_CONFIG}
 bash build.sh ${ONNXRUNTIME_BUILD_COMMAND} || bash build.sh ${ONNXRUNTIME_BUILD_COMMAND} --allow_running_as_root
 if [ "${INSTALL_AFTER_BUILD}" == "1" ]
 then
+    pip uninstall -y onnxruntime onnxruntime-training
     pip install build/Linux/${ONNXRUNTIME_BUILD_CONFIG}/dist/onnxruntime*.whl
 fi

@@ -2,39 +2,34 @@
 set -e -x
 
 # Packages compiled from source
-PYTHON_VERSION=3.8
-CUDA_VERSION=11.7.0
-ONNX_VERSION=main
-ONNXSCRIPT_VERSION=main
-PYTORCH_VERSION=main
-TORCHVISION_VERSION=main
-TORCHTEXT_VERSION=main
-TORCHAUDIO_VERSION=main
-DETECTRON2_VERSION=main
-ONNXRUNTIME_VERSION=main
-INSTALL_PROTOBUF=0
-INSTALL_OPENMPI=0
+PYTHON_VERSION="3.8"
+CUDA_VERSION="11.7.0"
+ONNX_VERSION="main"
+ONNXSCRIPT_VERSION="main"
+PYTORCH_VERSION="main"
+TORCHVISION_VERSION="main"
+TORCHTEXT_VERSION="main"
+TORCHAUDIO_VERSION="main"
+DETECTRON2_VERSION="main"
+ONNXRUNTIME_VERSION="main"
+INSTALL_PROTOBUF="0"
+INSTALL_OPENMPI="0"
 
-# Global (configurable) settings
-export CONDA_INSTALL_DIR=/opt/conda
-export DEBUG=0
-export REL_WITH_DEB_INFO=0
-export DOCKER_SCRIPTS=/opt/scripts/
-
-# Global (read-only) settings
-export GIT_REPOS_DIR=/opt
+# Global settings
+export DEBUG="0"
+export REL_WITH_DEB_INFO="0"
 export CONDA_INSTALL_DIR="/opt/conda"
+export GIT_REPOS_DIR="/opt"
+export BUILD_SCRIPTS_DIR="/opt/scripts"
+export TEMP_DIR="/tmp"
 export DEFAULT_CONDA_ENV="ptca"
 export DEBIAN_FRONTEND="noninteractive"
 export CUDA_HOME=/usr/local/cuda
-export CUDA_VERSION=${CUDA_VERSION}
-export DEBUG=${DEBUG}
-export TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST:-"3.5 5.2 6.0 6.1 7.0+PTX 8.0"}
-export TORCH_NVCC_FLAGS=${TORCH_NVCC_FLAGS:-"-Xfatbin -compress-all"}
-export REL_WITH_DEB_INFO=${REL_WITH_DEB_INFO}
-export NVIDIA_VISIBLE_DEVICES=all
-export NVIDIA_DRIVER_CAPABILITIES=compute,utility
-export ONNXRUNTIME_BUILD_CONFIG=RelWithDebInfo
+export CUDA_VERSION="${CUDA_VERSION}"
+export DEBUG="${DEBUG}"
+export TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1 7.0+PTX 8.0"
+export TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
+export ONNXRUNTIME_BUILD_CONFIG="RelWithDebInfo"
 
 # Input parsing
 help()
@@ -144,67 +139,56 @@ do
   esac
 done
 
-# Scripts run from here
-cd ${BUILD_SCRIPTS}
-
 case ${BUILD_TARGET} in
   os)
-    bash ${BUILD_SCRIPTS}/000_ubuntu_apt_packages.sh
-    bash ${BUILD_SCRIPTS}/005_cmake_from_tarball.sh
-    bash ${BUILD_SCRIPTS}/010_protobuf_from_source.sh ${INSTALL_PROTOBUF}
-    bash ${BUILD_SCRIPTS}/015_openmpi4_from_source.sh ${INSTALL_OPENMPI}
+    bash ${BUILD_SCRIPTS}/000_ubuntu_apt_packages.sh ${BUILD_SCRIPTS_DIR}
+    bash ${BUILD_SCRIPTS}/005_cmake_from_tarball.sh ${GIT_REPOS_DIR}
+    bash ${BUILD_SCRIPTS}/010_protobuf_from_source.sh ${INSTALL_PROTOBUF} ${GIT_REPOS_DIR}
+    bash ${BUILD_SCRIPTS}/015_openmpi4_from_source.sh ${INSTALL_OPENMPI} ${GIT_REPOS_DIR}
     ;;
   conda)
-    bash ${BUILD_SCRIPTS}/100_miniconda_from_installer.sh ${PYTHON_VERSION}
-    bash ${BUILD_SCRIPTS}/101_install_python_deps.sh ${ONNX_VERSION} ${ONNXSCRIPT_VERSION} ${PYTORCH_VERSION} ${TORCHTEXT_VERSION} ${TORCHVISION_VERSION} ${TORCHAUDIO_VERSION} ${DETECTRON2_VERSION} ${ONNXRUNTIME_VERSION}
+    bash ${BUILD_SCRIPTS}/100_miniconda_from_installer.sh ${PYTHON_VERSION} ${TEMP_DIR}
+    bash ${BUILD_SCRIPTS}/101_install_python_deps.sh ${ONNX_VERSION} ${ONNXSCRIPT_VERSION} ${PYTORCH_VERSION} ${TORCHTEXT_VERSION} ${TORCHVISION_VERSION} ${TORCHAUDIO_VERSION} ${DETECTRON2_VERSION} ${ONNXRUNTIME_VERSION}  ${BUILD_SCRIPTS_DIR} ${GIT_RETEMP_DIRPOS_DIR}
     ;;
   onnx)
-    cd ${GIT_REPOS_DIR}
-    bash && ${BUILD_SCRIPTS}/105_onnx_from_source.sh ${ONNX_VERSION} 1
+    bash && ${BUILD_SCRIPTS}/105_onnx_from_source.sh ${ONNX_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   onnxscript)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/107_onnxscript_from_source.sh ${ONNXSCRIPT_VERSION} 1
+    bash ${BUILD_SCRIPTS}/107_onnxscript_from_source.sh ${ONNXSCRIPT_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   pytorch)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/110_pytorch_from_source.sh ${PYTORCH_VERSION} 1
+    bash ${BUILD_SCRIPTS}/110_pytorch_from_source.sh ${PYTORCH_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   torchtext)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/115_torchtext_from_source.sh ${TORCHTEXT_VERSION} 1
+    bash ${BUILD_SCRIPTS}/115_torchtext_from_source.sh ${TORCHTEXT_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   torchvision)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/120_torchvision_from_source.sh ${TORCHVISION_VERSION} 1
+    bash ${BUILD_SCRIPTS}/120_torchvision_from_source.sh ${TORCHVISION_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   torchaudio)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/125_torchaudio_from_source.sh ${TORCHAUDIO_VERSION} 1
+    bash ${BUILD_SCRIPTS}/125_torchaudio_from_source.sh ${TORCHAUDIO_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   detectron2)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/130_detectron2_from_source.sh ${DETECTRON2_VERSION} 1
+    bash ${BUILD_SCRIPTS}/130_detectron2_from_source.sh ${DETECTRON2_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   onnxruntime)
-    cd ${GIT_REPOS_DIR}
-    bash ${BUILD_SCRIPTS}/135_onnxruntime_from_source.sh ${ONNXRUNTIME_VERSION} ${ONNXRUNTIME_BUILD_CONFIG} ${CUDA_VERSION} 1
+    bash ${BUILD_SCRIPTS}/135_onnxruntime_from_source.sh ${ONNXRUNTIME_VERSION} ${ONNXRUNTIME_BUILD_CONFIG} ${CUDA_VERSION} 1 ${GIT_REPOS_DIR}
     ;;
   __ALL__)
-      bash ${BUILD_SCRIPTS}/000_ubuntu_apt_packages.sh
-      bash ${BUILD_SCRIPTS}/005_cmake_from_tarball.sh
-      bash ${BUILD_SCRIPTS}/010_protobuf_from_source.sh ${INSTALL_PROTOBUF}
-      bash ${BUILD_SCRIPTS}/015_openmpi4_from_source.sh ${INSTALL_OPENMPI}
-      bash ${BUILD_SCRIPTS}/100_miniconda_from_installer.sh ${PYTHON_VERSION}
-      bash ${BUILD_SCRIPTS}/101_install_python_deps.sh ${ONNX_VERSION} ${ONNXSCRIPT_VERSION} ${PYTORCH_VERSION} ${TORCHTEXT_VERSION} ${TORCHVISION_VERSION} ${TORCHAUDIO_VERSION} ${DETECTRON2_VERSION} ${ONNXRUNTIME_VERSION}
-      bash ${BUILD_SCRIPTS}/105_onnx_from_source.sh ${ONNX_VERSION} 1
-      bash ${BUILD_SCRIPTS}/107_onnxscript_from_source.sh ${ONNXSCRIPT_VERSION} 1
-      bash ${BUILD_SCRIPTS}/110_pytorch_from_source.sh ${PYTORCH_VERSION} 1
-      bash ${BUILD_SCRIPTS}/115_torchtext_from_source.sh ${TORCHTEXT_VERSION} 1
-      bash ${BUILD_SCRIPTS}/120_torchvision_from_source.sh ${TORCHVISION_VERSION} 1
-      bash ${BUILD_SCRIPTS}/125_torchaudio_from_source.sh ${TORCHAUDIO_VERSION} 1
-      bash ${BUILD_SCRIPTS}/130_detectron2_from_source.sh ${DETECTRON2_VERSION} 1
-      bash ${BUILD_SCRIPTS}/135_onnxruntime_from_source.sh ${ONNXRUNTIME_VERSION} ${ONNXRUNTIME_BUILD_CONFIG} ${CUDA_VERSION} 1
+      bash ${BUILD_SCRIPTS}/000_ubuntu_apt_packages.sh ${BUILD_SCRIPTS_DIR}
+      bash ${BUILD_SCRIPTS}/005_cmake_from_tarball.sh ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/010_protobuf_from_source.sh ${INSTALL_PROTOBUF} ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/015_openmpi4_from_source.sh ${INSTALL_OPENMPI} ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/100_miniconda_from_installer.sh ${PYTHON_VERSION} ${TEMP_DIR}
+      bash ${BUILD_SCRIPTS}/101_install_python_deps.sh ${ONNX_VERSION} ${ONNXSCRIPT_VERSION} ${PYTORCH_VERSION} ${TORCHTEXT_VERSION} ${TORCHVISION_VERSION} ${TORCHAUDIO_VERSION} ${DETECTRON2_VERSION} ${ONNXRUNTIME_VERSION} ${BUILD_SCRIPTS_DIR} ${TEMP_DIR}
+      bash ${BUILD_SCRIPTS}/105_onnx_from_source.sh ${ONNX_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/107_onnxscript_from_source.sh ${ONNXSCRIPT_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/110_pytorch_from_source.sh ${PYTORCH_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/115_torchtext_from_source.sh ${TORCHTEXT_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/120_torchvision_from_source.sh ${TORCHVISION_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/125_torchaudio_from_source.sh ${TORCHAUDIO_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/130_detectron2_from_source.sh ${DETECTRON2_VERSION} 1 ${GIT_REPOS_DIR}
+      bash ${BUILD_SCRIPTS}/135_onnxruntime_from_source.sh ${ONNXRUNTIME_VERSION} ${ONNXRUNTIME_BUILD_CONFIG} ${CUDA_VERSION} 1 ${GIT_REPOS_DIR}
       ;;
   *)
     echo "Unexpected build target: ${BUILD_TARGET}"

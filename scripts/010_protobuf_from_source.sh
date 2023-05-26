@@ -1,8 +1,11 @@
 #!/bin/bash
 set -e -x
 
-INSTALL_PROTOBUF=${1:-0}
-PROTOBUF_VERSION=${2:-v3.20.2}
+INSTALL_PROTOBUF=${1:-"0"}
+ROOT_DIR=${2:-"/opt"}
+PROTOBUF_VERSION=${3:-"v3.20.2"}
+
+cd ${ROOT_DIR}
 
 if [ "${INSTALL_PROTOBUF}" == "1" ] && [ ! -d protobuf ]
 then

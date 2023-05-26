@@ -4,6 +4,8 @@ set -e -x
 # Can be a tag, commit or branch
 TORCHVISION_VERSION=${1}
 INSTALL_AFTER_BUILD=${2:-0}
+ROOT_DIR=${3:-"/opt"}
+cd ${ROOT_DIR}
 
 unset PYTORCH_VERSION
 export FORCE_CUDA=1
@@ -31,5 +33,6 @@ git submodule update --init --recursive --jobs 0
 python setup.py bdist_wheel
 if [ "${INSTALL_AFTER_BUILD}" == "1" ]
 then
+    pip uninstall -y torchvision
     pip install dist/torchvision*.whl
 fi

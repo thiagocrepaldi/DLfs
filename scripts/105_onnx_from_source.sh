@@ -4,6 +4,8 @@ set -e -x
 # Can be a tag, commit or branch
 ONNX_VERSION=${1}
 INSTALL_AFTER_BUILD=${2:-0}
+ROOT_DIR=${3:-"/opt"}
+cd ${ROOT_DIR}
 
 source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
@@ -30,6 +32,7 @@ git submodule update --init --recursive --jobs 0
 python setup.py bdist_wheel
 if [ "${INSTALL_AFTER_BUILD}" == "1" ]
 then
+    pip uninstall -y onnx
     pip install dist/onnx*.whl
 fi
 # python -m pip install -e .

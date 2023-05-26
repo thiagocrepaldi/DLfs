@@ -4,6 +4,8 @@ set -e -x
 # Can be a tag, commit or branch
 ONNXSCRIPT_VERSION=${1}
 INSTALL_AFTER_BUILD=${2:-0}
+ROOT_DIR=${3:-"/opt"}
+cd ${ROOT_DIR}
 
 source ${CONDA_INSTALL_DIR}/bin/activate ${DEFAULT_CONDA_ENV}
 CONDA_PATH=$(which conda)
@@ -29,5 +31,6 @@ python setup.py bdist_wheel
 # python -m pip install -e .
 if [ "${INSTALL_AFTER_BUILD}" == "1" ]
 then
+    pip uninstall -y onnxscript
     pip install dist/onnxscript*.whl
 fi

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-CMAKE_VERSION=${1:-3.26.0}
+CMAKE_VERSION=${1:-"3.26.0"}
+ROOT_DIR=${2:-"/opt"}
+cd ${ROOT_DIR}
+
 CMAKE_TAR_FILE=cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz
 INSTALL_DIR=/usr/local
 

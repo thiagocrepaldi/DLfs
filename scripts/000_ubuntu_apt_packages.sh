@@ -1,7 +1,11 @@
 #!/bin/bash
+
+ROOT_DIR=${1:-"/opt"}
+cd ${ROOT_DIR}
+
 set -e -x
 export DEBIAN_FRONTEND=noninteractive # Make sure apt installed packages are not interactive
-GUARD_FILE="___UBUNTU_APT_PACKAGES_INSTALLED___"
+GUARD_FILE="${ROOT_DIR}/___UBUNTU_APT_PACKAGES_INSTALLED___"
 
 if [ ! -f ${GUARD_FILE} ]
 then

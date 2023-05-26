@@ -106,10 +106,10 @@ docker_build.sh \
   --onnx main \
   --python 3.8 \
   --onnxruntime main \
-  --torch   main \
-  --push  0 \
-  --torchvision  main \
-  --onnxscript  main
+  --torch main \
+  --push 0 \
+  --torchvision main \
+  --onnxscript main
 ```
 
 ### Example using ACPT's private CUDA image (stable)
@@ -132,10 +132,10 @@ docker_build.sh \
   --onnx v1.14.0 \
   --python 3.8 \
   --onnxruntime v1.14.1 \
-  --torch   v2.0.1 \
-  --push  0 \
-  --torchvision  v0.15.1 \
-  --onnxscript  main
+  --torch v2.0.1 \
+  --push 0 \
+  --torchvision v0.15.1 \
+  --onnxscript main
 ```
 
 ## Updating an existing environment from scratch
@@ -167,6 +167,7 @@ IMPORTANT: ALL parameters, but -h, MUST be specified. If you know how to getopts
 ### Example updating environment with nightly builds
 
 Below is an example on how to build all projects pointing to their latest development branch (aka main).
+It is assumed the `/opt/scripts` contains all scripts and that repos will be cloned at `/opt`.
 
 ```bash
 build_from_source.sh \
@@ -181,9 +182,9 @@ build_from_source.sh \
   --onnx main \
   --python 3.8 \
   --onnxruntime main \
-  --torch   main \
-  --torchvision  main \
-  --onnxscript  main
+  --torch main \
+  --torchvision main \
+  --onnxscript main
 ```
 
 ## Limitations
